@@ -13,8 +13,10 @@ from griptape.utils import import_optional_dependency
 class AudioLoader(BaseLoader):
     """Loads audio content into audio artifacts."""
 
-    def load(self, source: bytes, *args, **kwargs) -> AudioArtifact:
-        return AudioArtifact(source, format=import_optional_dependency("filetype").guess(source).extension)
+    def load(self, source: bytes, *args, **kwargs) -> list[AudioArtifact]:
+        audio_artifact = [AudioArtifact(source, format=import_optional_dependency("filetype").guess(source).extension)]
 
-    def load_collection(self, sources: list[bytes], *args, **kwargs) -> dict[str, AudioArtifact]:
-        return cast(dict[str, AudioArtifact], super().load_collection(sources, *args, **kwargs))
+        return audio_artifact
+
+    def load_collection(self, sources: list[bytes], *args, **kwargs) -> dict[str, list[AudioArtifact]]:
+        return cast(dict[str, list[AudioArtifact]], super().load_collection(sources, *args, **kwargs))

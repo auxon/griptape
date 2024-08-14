@@ -31,7 +31,7 @@ class TestImageLoader:
     def test_load(self, resource_path, mime_type, loader, create_source):
         source = create_source(resource_path)
 
-        artifact = loader.load(source)
+        artifact = loader.load(source)[0]
 
         assert isinstance(artifact, ImageArtifact)
         assert artifact.height == 32
@@ -45,7 +45,7 @@ class TestImageLoader:
     def test_load_normalize(self, resource_path, png_loader, create_source):
         source = create_source(resource_path)
 
-        artifact = png_loader.load(source)
+        artifact = png_loader.load(source)[0]
 
         assert isinstance(artifact, ImageArtifact)
         assert artifact.height == 32
@@ -64,7 +64,7 @@ class TestImageLoader:
         assert collection.keys() == keys
 
         for key in keys:
-            artifact = collection[key]
+            artifact = collection[key][0]
             assert isinstance(artifact, ImageArtifact)
             assert artifact.height == 32
             assert artifact.width == 32

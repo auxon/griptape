@@ -20,14 +20,14 @@ class BaseLoader(FuturesExecutorMixin, ABC):
     encoding: Optional[str] = field(default=None, kw_only=True)
 
     @abstractmethod
-    def load(self, source: Any, *args, **kwargs) -> BaseArtifact | Sequence[BaseArtifact]: ...
+    def load(self, source: Any, *args, **kwargs) -> Sequence[BaseArtifact]: ...
 
     def load_collection(
         self,
         sources: list[Any],
         *args,
         **kwargs,
-    ) -> Mapping[str, BaseArtifact | Sequence[BaseArtifact | Sequence[BaseArtifact]]]:
+    ) -> Mapping[str, Sequence[BaseArtifact]]:
         # Create a dictionary before actually submitting the jobs to the executor
         # to avoid duplicate work.
         sources_by_key = {self.to_key(source): source for source in sources}
