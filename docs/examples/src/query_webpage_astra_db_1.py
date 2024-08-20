@@ -44,7 +44,6 @@ engine = RagEngine(
 )
 
 artifacts = WebLoader(max_tokens=256).load(input_blogpost)
-
 vector_store_driver.upsert_text_artifacts({namespace: artifacts})
 
 rag_tool = RagTool(

@@ -10,7 +10,6 @@ prompt_driver = OpenAiChatPromptDriver(model="gpt-4o", temperature=0)
 vector_store = LocalVectorStoreDriver(embedding_driver=OpenAiEmbeddingDriver())
 artifacts = WebLoader(max_tokens=500).load("https://www.griptape.ai")
 
-
 vector_store.upsert_text_artifacts(
     {
         "griptape": artifacts,

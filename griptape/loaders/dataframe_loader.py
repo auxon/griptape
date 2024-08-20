@@ -6,8 +6,7 @@ from attrs import define, field
 
 from griptape.artifacts import TableArtifact
 from griptape.loaders import BaseLoader
-from griptape.utils import import_optional_dependency
-from griptape.utils.hash import str_to_hash
+from griptape.utils import import_optional_dependency, str_to_hash
 
 if TYPE_CHECKING:
     from pandas import DataFrame

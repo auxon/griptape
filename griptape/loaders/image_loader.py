@@ -31,7 +31,7 @@ class ImageLoader(BaseLoader):
         "webp": "image/webp",
     }
 
-    def load(self, source: bytes, *args, **kwargs) -> list[ImageArtifact]:
+    def load(self, source: bytes, *args, **kwargs) -> ImageArtifact:
         pil_image = import_optional_dependency("PIL.Image")
         image = pil_image.open(BytesIO(source))
 
@@ -42,12 +42,10 @@ class ImageLoader(BaseLoader):
             image = pil_image.open(byte_stream)
             source = byte_stream.getvalue()
 
-        image_artifact = ImageArtifact(source, format=image.format.lower(), width=image.width, height=image.height)
+        return ImageArtifact(source, format=image.format.lower(), width=image.width, height=image.height)
 
-        return [image_artifact]
-
-    def load_collection(self, sources: list[bytes], *args, **kwargs) -> dict[str, list[ImageArtifact]]:
-        return cast(dict[str, list[ImageArtifact]], super().load_collection(sources, *args, **kwargs))
+    def load_collection(self, sources: list[bytes], *args, **kwargs) -> dict[str, ImageArtifact]:
+        return cast(dict[str, ImageArtifact], super().load_collection(sources, *args, **kwargs))
 
     def _get_mime_type(self, image_format: str | None) -> str:
         if image_format is None:

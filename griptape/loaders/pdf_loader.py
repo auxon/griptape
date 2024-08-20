@@ -5,7 +5,7 @@ from typing import Optional, cast
 
 from attrs import Factory, define, field
 
-from griptape.artifacts import TextArtifact
+from griptape.artifacts import ListArtifact
 from griptape.chunkers import PdfChunker
 from griptape.loaders import BaseTextLoader
 from griptape.utils import import_optional_dependency
@@ -25,14 +25,14 @@ class PdfLoader(BaseTextLoader):
         password: Optional[str] = None,
         *args,
         **kwargs,
-    ) -> list[TextArtifact]:
+    ) -> ListArtifact:
         pypdf = import_optional_dependency("pypdf")
         reader = pypdf.PdfReader(BytesIO(source), strict=True, password=password)
 
-        return self._text_to_artifacts("\n".join([p.extract_text() for p in reader.pages]))
+        return ListArtifact([p.extract_text() for p in reader.pages])
 
-    def load_collection(self, sources: list[bytes], *args, **kwargs) -> dict[str, list[TextArtifact]]:
+    def load_collection(self, sources: list[bytes], *args, **kwargs) -> dict[str, ListArtifact]:
         return cast(
-            dict[str, list[TextArtifact]],
+            dict[str, ListArtifact],
             super().load_collection(sources, *args, **kwargs),
         )

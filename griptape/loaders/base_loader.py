@@ -10,7 +10,7 @@ from griptape.utils.futures import execute_futures_dict
 from griptape.utils.hash import bytes_to_hash, str_to_hash
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Mapping
 
     from griptape.artifacts import BaseArtifact
 
@@ -20,14 +20,14 @@ class BaseLoader(FuturesExecutorMixin, ABC):
     encoding: Optional[str] = field(default=None, kw_only=True)
 
     @abstractmethod
-    def load(self, source: Any, *args, **kwargs) -> Sequence[BaseArtifact]: ...
+    def load(self, source: Any, *args, **kwargs) -> BaseArtifact: ...
 
     def load_collection(
         self,
         sources: list[Any],
         *args,
         **kwargs,
-    ) -> Mapping[str, Sequence[BaseArtifact]]:
+    ) -> Mapping[str, BaseArtifact]:
         # Create a dictionary before actually submitting the jobs to the executor
         # to avoid duplicate work.
         sources_by_key = {self.to_key(source): source for source in sources}
@@ -39,10 +39,8 @@ class BaseLoader(FuturesExecutorMixin, ABC):
             },
         )
 
-    def to_key(self, source: Any, *args, **kwargs) -> str:
+    def to_key(self, source: Any) -> str:
         if isinstance(source, bytes):
             return bytes_to_hash(source)
-        elif isinstance(source, str):
-            return str_to_hash(source)
         else:
             return str_to_hash(str(source))

@@ -18,6 +18,5 @@ class WebLoader(BaseTextLoader):
         kw_only=True,
     )
 
-    def load(self, source: str, *args, **kwargs) -> list[TextArtifact]:
-        single_chunk_text_artifact = self.web_scraper_driver.scrape_url(source)
-        return self._text_to_artifacts(single_chunk_text_artifact.value)
+    def load(self, source: str, *args, **kwargs) -> TextArtifact:
+        return self.web_scraper_driver.scrape_url(source)
