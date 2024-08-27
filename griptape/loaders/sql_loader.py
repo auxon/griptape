@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional, cast
 
 from attrs import define, field
 
-from griptape.artifacts import CsvRowArtifact
+from griptape.artifacts import TableArtifact
 from griptape.loaders import BaseLoader
 
 if TYPE_CHECKING:
@@ -16,20 +16,14 @@ class SqlLoader(BaseLoader):
     sql_driver: BaseSqlDriver = field(kw_only=True)
     embedding_driver: Optional[BaseEmbeddingDriver] = field(default=None, kw_only=True)
 
-    def load(self, source: str, *args, **kwargs) -> list[CsvRowArtifact]:
+    def load(self, source: str, *args, **kwargs) -> TableArtifact:
         rows = self.sql_driver.execute_query(source)
-        artifacts = []
-
-        chunks = [CsvRowArtifact(row.cells) for row in rows] if rows else []
+        artifact = TableArtifact([row.cells for row in rows] if rows else [])
 
         if self.embedding_driver:
-            for chunk in chunks:
-                chunk.generate_embedding(self.embedding_driver)
+            artifact.generate_embedding(self.embedding_driver)
 
-        for chunk in chunks:
-            artifacts.append(chunk)
+        return artifact
 
-        return artifacts
-
-    def load_collection(self, sources: list[str], *args, **kwargs) -> dict[str, list[CsvRowArtifact]]:
-        return cast(dict[str, list[CsvRowArtifact]], super().load_collection(sources, *args, **kwargs))
+    def load_collection(self, sources: list[str], *args, **kwargs) -> dict[str, TableArtifact]:
+        return cast(dict[str, TableArtifact], super().load_collection(sources, *args, **kwargs))

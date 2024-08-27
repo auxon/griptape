@@ -11,5 +11,5 @@ from griptape.artifacts import BaseArtifact
 class GenericArtifact(BaseArtifact):
     value: Any = field(metadata={"serializable": True})
 
-    def __add__(self, other: BaseArtifact) -> BaseArtifact:
-        raise NotImplementedError
+    def to_text(self) -> str:
+        return str(self.value)

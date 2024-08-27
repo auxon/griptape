@@ -15,8 +15,7 @@ from griptape.rules import Rule, Ruleset
 from griptape.tasks import BaseTask
 
 if TYPE_CHECKING:
-    from griptape.artifacts import MediaArtifact
-
+    from griptape.artifacts import ImageArtifact
 
 logger = logging.getLogger(Defaults.logging_config.logger_name)
 
@@ -64,6 +63,6 @@ class BaseImageGenerationTask(BlobArtifactFileOutputMixin, RuleMixin, BaseTask, 
 
         return task_rulesets
 
-    def _read_from_file(self, path: str) -> MediaArtifact:
+    def _read_from_file(self, path: str) -> ImageArtifact:
         logger.info("Reading image from %s", os.path.abspath(path))
         return ImageLoader().load(Path(path).read_bytes())

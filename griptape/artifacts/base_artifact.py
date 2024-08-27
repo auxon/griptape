@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import uuid
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Optional
@@ -25,22 +24,6 @@ class BaseArtifact(SerializableMixin, ABC):
     )
     value: Any = field()
 
-    @classmethod
-    def value_to_bytes(cls, value: Any) -> bytes:
-        if isinstance(value, bytes):
-            return value
-        else:
-            return str(value).encode()
-
-    @classmethod
-    def value_to_dict(cls, value: Any) -> dict:
-        dict_value = value if isinstance(value, dict) else json.loads(value)
-
-        return dict(dict_value.items())
-
-    def to_text(self) -> str:
-        return str(self.value)
-
     def __str__(self) -> str:
         return self.to_text()
 
@@ -50,5 +33,8 @@ class BaseArtifact(SerializableMixin, ABC):
     def __len__(self) -> int:
         return len(self.value)
 
+    def to_bytes(self) -> bytes:
+        return self.to_text().encode("utf-8")
+
     @abstractmethod
-    def __add__(self, other: BaseArtifact) -> BaseArtifact: ...
+    def to_text(self) -> str: ...

@@ -1,21 +1,24 @@
 from __future__ import annotations
 
 import json
-from typing import Union
+from typing import Any, Union
 
-from attrs import define, field
+from attrs import Converter, define, field
 
-from griptape.artifacts import BaseArtifact
-
-Json = Union[dict[str, "Json"], list["Json"], str, int, float, bool, None]
+from griptape.artifacts.text_artifact import TextArtifact
 
 
 @define
-class JsonArtifact(BaseArtifact):
-    value: Json = field(converter=lambda v: json.loads(json.dumps(v)), metadata={"serializable": True})
+class JsonArtifact(TextArtifact):
+    Json = Union[dict[str, "Json"], list["Json"], str, int, float, bool, None]
+
+    value: Json = field(
+        converter=Converter(lambda value: JsonArtifact.value_to_dict(value)), metadata={"serializable": True}
+    )
+
+    @classmethod
+    def value_to_dict(cls, value: Any) -> dict:
+        return json.loads(json.dumps(value))
 
     def to_text(self) -> str:
         return json.dumps(self.value)
-
-    def __add__(self, other: BaseArtifact) -> JsonArtifact:
-        raise NotImplementedError

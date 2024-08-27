@@ -16,14 +16,14 @@ class TestDataFrameLoader:
         # test loading a file delimited by comma
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../resources/test-1.csv")
 
-        artifacts = loader.load(pd.read_csv(path))
+        artifact = loader.load(pd.read_csv(path))
 
-        assert len(artifacts) == 10
-        first_artifact = artifacts[0].value
+        assert len(artifact) == 10
+        first_artifact = artifact.value[0]
         assert first_artifact["Foo"] == "foo1"
         assert first_artifact["Bar"] == "bar1"
 
-        assert artifacts[0].embedding == [0, 1]
+        assert artifact.embedding == [0, 1]
 
     def test_load_collection_with_path(self, loader):
         path1 = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../resources/test-1.csv")
@@ -37,16 +37,16 @@ class TestDataFrameLoader:
 
         assert list(collection.keys()) == [key1, key2]
 
-        artifacts = collection[key1]
-        assert len(artifacts) == 10
-        first_artifact = artifacts[0].value
+        artifact = collection[key1]
+        assert len(artifact) == 10
+        first_artifact = artifact.value[0]
         assert first_artifact["Foo"] == "foo1"
         assert first_artifact["Bar"] == "bar1"
 
-        artifacts = collection[key2]
-        assert len(artifacts) == 10
-        first_artifact = artifacts[0].value
+        artifact = collection[key2]
+        assert len(artifact) == 10
+        first_artifact = artifact.value[0]
         assert first_artifact["Bar"] == "bar1"
         assert first_artifact["Foo"] == "foo1"
 
-        assert artifacts[0].embedding == [0, 1]
+        assert artifact.embedding == [0, 1]

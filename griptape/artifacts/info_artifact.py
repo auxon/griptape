@@ -2,12 +2,9 @@ from __future__ import annotations
 
 from attrs import define, field
 
-from griptape.artifacts import BaseArtifact
+from griptape.artifacts import BaseSystemArtifact
 
 
 @define
-class InfoArtifact(BaseArtifact):
+class InfoArtifact(BaseSystemArtifact):
     value: str = field(converter=str, metadata={"serializable": True})
-
-    def __add__(self, other: BaseArtifact) -> InfoArtifact:
-        return InfoArtifact(self.value + other.value)

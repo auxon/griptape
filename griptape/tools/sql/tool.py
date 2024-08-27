@@ -5,11 +5,12 @@ from typing import TYPE_CHECKING, Optional
 from attrs import define, field
 from schema import Schema
 
-from griptape.artifacts import ErrorArtifact, InfoArtifact, ListArtifact
+from griptape.artifacts import ErrorArtifact, InfoArtifact
 from griptape.tools import BaseTool
 from griptape.utils.decorators import activity
 
 if TYPE_CHECKING:
+    from griptape.artifacts import TableArtifact
     from griptape.loaders import SqlLoader
 
 
@@ -43,7 +44,7 @@ class SqlTool(BaseTool):
             "schema": Schema({"sql_query": str}),
         },
     )
-    def execute_query(self, params: dict) -> ListArtifact | InfoArtifact | ErrorArtifact:
+    def execute_query(self, params: dict) -> TableArtifact | InfoArtifact | ErrorArtifact:
         try:
             query = params["values"]["sql_query"]
             rows = self.sql_loader.load(query)
@@ -51,6 +52,6 @@ class SqlTool(BaseTool):
             return ErrorArtifact(f"error executing query: {e}")
 
         if len(rows) > 0:
-            return ListArtifact(rows)
+            return rows
         else:
             return InfoArtifact("No results found")
