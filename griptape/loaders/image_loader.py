@@ -6,12 +6,12 @@ from typing import Optional
 from attrs import define, field
 
 from griptape.artifacts import ImageArtifact
-from griptape.loaders import BaseLoader
+from griptape.loaders import BaseFileLoader
 from griptape.utils import import_optional_dependency
 
 
 @define
-class ImageLoader(BaseLoader):
+class ImageLoader(BaseFileLoader):
     """Loads images into image artifacts.
 
     Attributes:

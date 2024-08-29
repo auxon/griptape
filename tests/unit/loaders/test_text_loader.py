@@ -12,7 +12,7 @@ class TestTextLoader:
         else:
             return TextLoader(encoding=encoding)
 
-    @pytest.fixture(params=["bytes_from_resource_path", "str_from_resource_path"])
+    @pytest.fixture(params=["path_from_resource_path"])
     def create_source(self, request):
         return request.getfixturevalue(request.param)
 

@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 class SqlLoader(BaseLoader):
     sql_driver: BaseSqlDriver = field(kw_only=True)
 
-    def load(self, source: str, *args, **kwargs) -> TableArtifact:
-        rows = self.sql_driver.execute_query(source)
-        artifact = TableArtifact([row.cells for row in rows] if rows else [])
+    def fetch(self, source: str, *args, **kwargs) -> list[BaseSqlDriver.RowResult]:
+        return self.sql_driver.execute_query(source) or []
 
-        return artifact
+    def parse(self, source: list[BaseSqlDriver.RowResult], *args, **kwargs) -> TableArtifact:
+        return TableArtifact([row.cells for row in source])

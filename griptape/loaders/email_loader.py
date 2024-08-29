@@ -32,7 +32,7 @@ class EmailLoader(BaseLoader):
     username: str = field(kw_only=True)
     password: str = field(kw_only=True)
 
-    def fetch(self, source: EmailQuery, *args, **kwargs) -> bytes:
+    def fetch(self, source: EmailQuery, *args, **kwargs) -> list[bytes]:
         label, key, search_criteria, max_count = astuple(source)
 
         mail_bytes = []
@@ -62,9 +62,9 @@ class EmailLoader(BaseLoader):
 
             client.close()
 
-        return bytes(mail_bytes)
+        return mail_bytes
 
-    def parse(self, source: bytes, *args, **kwargs) -> ListArtifact:
+    def parse(self, source: list[bytes], *args, **kwargs) -> ListArtifact:
         mailparser = import_optional_dependency("mailparser")
         artifacts = []
         for byte in source:
@@ -73,7 +73,7 @@ class EmailLoader(BaseLoader):
             # Note: mailparser only populates the text_plain field
             # if the message content type is explicitly set to 'text/plain'.
             if message.text_plain:
-                artifacts.append(TextArtifact(message.text_plain))
+                artifacts.append(TextArtifact("\n".join(message.text_plain)))
 
         return ListArtifact(artifacts)
 

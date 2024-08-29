@@ -3,7 +3,6 @@ from sqlalchemy.pool import StaticPool
 
 from griptape.drivers import SqlDriver
 from griptape.loaders import SqlLoader
-from tests.mocks.mock_embedding_driver import MockEmbeddingDriver
 
 MAX_TOKENS = 50
 
@@ -16,7 +15,6 @@ class TestSqlLoader:
                 engine_url="sqlite:///:memory:",
                 create_engine_params={"connect_args": {"check_same_thread": False}, "poolclass": StaticPool},
             ),
-            embedding_driver=MockEmbeddingDriver(),
         )
 
         sql_loader.sql_driver.execute_query(
@@ -42,8 +40,6 @@ class TestSqlLoader:
         assert artifact.value[1] == {"id": 2, "name": "Bob", "age": 30, "city": "Los Angeles"}
         assert artifact.value[2] == {"id": 3, "name": "Charlie", "age": 22, "city": "Chicago"}
 
-        assert artifact.embedding == [0, 1]
-
     def test_load_collection(self, loader):
         artifacts = loader.load_collection(["SELECT * FROM test_table LIMIT 1;", "SELECT * FROM test_table LIMIT 2;"])
 
@@ -57,5 +53,3 @@ class TestSqlLoader:
             {"age": 25, "city": "New York", "id": 1, "name": "Alice"},
             {"age": 30, "city": "Los Angeles", "id": 2, "name": "Bob"},
         ]
-
-        assert list(artifacts.values())[0].embedding == [0, 1]

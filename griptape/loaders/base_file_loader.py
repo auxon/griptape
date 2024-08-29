@@ -1,24 +1,24 @@
 from __future__ import annotations
 
 from abc import ABC
-from io import BytesIO
-from os import PathLike
-from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING
 
-from attrs import define, field
+from attrs import Factory, define, field
 
+from griptape.drivers import BaseFileManagerDriver, LocalFileManagerDriver
 from griptape.loaders import BaseLoader
+
+if TYPE_CHECKING:
+    from os import PathLike
 
 
 @define
 class BaseFileLoader(BaseLoader, ABC):
-    encoding: Optional[str] = field(default=None, kw_only=True)
+    file_manager_driver: BaseFileManagerDriver = field(
+        default=Factory(lambda: LocalFileManagerDriver(workdir=None)),
+        kw_only=True,
+    )
+    encoding: str = field(default="utf-8", kw_only=True)
 
-    def fetch(self, source: str | BytesIO | PathLike, *args, **kwargs) -> bytes:
-        if isinstance(source, (str, PathLike)):
-            content = Path(source).read_bytes()
-        elif isinstance(source, BytesIO):
-            content = source.read()
-
-        return content
+    def fetch(self, source: str | PathLike, *args, **kwargs) -> bytes:
+        return self.file_manager_driver.load_file(str(source), *args, **kwargs)

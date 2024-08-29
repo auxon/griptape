@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+from io import StringIO
 
 from attrs import define, field
 
@@ -14,6 +15,6 @@ class CsvLoader(TextLoader):
     encoding: str = field(default="utf-8", kw_only=True)
 
     def parse(self, source: bytes, *args, **kwargs) -> TableArtifact:
-        reader = csv.DictReader(source.decode(self.encoding), delimiter=self.delimiter)
+        reader = csv.DictReader(StringIO(source.decode(self.encoding)), delimiter=self.delimiter)
 
         return TableArtifact(list(reader), delimiter=self.delimiter, fieldnames=reader.fieldnames)

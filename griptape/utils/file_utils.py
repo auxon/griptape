@@ -5,9 +5,10 @@ from pathlib import Path
 from typing import Optional
 
 import griptape.utils as utils
+from tests.unit.loaders.conftest import BytesIO
 
 
-def load_file(path: str) -> bytes:
+def load_file(path: str) -> BytesIO:
     """Load a file from the given path and return its content as bytes.
 
     Args:
@@ -16,10 +17,10 @@ def load_file(path: str) -> bytes:
     Returns:
         The content of the file.
     """
-    return Path(path).read_bytes()
+    return BytesIO(Path(path).read_bytes())
 
 
-def load_files(paths: list[str], futures_executor: Optional[futures.ThreadPoolExecutor] = None) -> dict[str, bytes]:
+def load_files(paths: list[str], futures_executor: Optional[futures.ThreadPoolExecutor] = None) -> dict[str, BytesIO]:
     """Load multiple files concurrently and return a dictionary of their content.
 
     Args:

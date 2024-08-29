@@ -1,7 +1,6 @@
 import pytest
 
 from griptape.loaders.csv_loader import CsvLoader
-from tests.mocks.mock_embedding_driver import MockEmbeddingDriver
 
 
 class TestCsvLoader:
@@ -9,15 +8,15 @@ class TestCsvLoader:
     def loader(self, request):
         encoding = request.param
         if encoding is None:
-            return CsvLoader(embedding_driver=MockEmbeddingDriver())
+            return CsvLoader()
         else:
-            return CsvLoader(encoding=encoding, embedding_driver=MockEmbeddingDriver())
+            return CsvLoader(encoding=encoding)
 
     @pytest.fixture()
     def loader_with_pipe_delimiter(self):
-        return CsvLoader(delimiter="|", embedding_driver=MockEmbeddingDriver())
+        return CsvLoader(delimiter="|")
 
-    @pytest.fixture(params=["bytes_from_resource_path", "str_from_resource_path"])
+    @pytest.fixture(params=["path_from_resource_path"])
     def create_source(self, request):
         return request.getfixturevalue(request.param)
 
@@ -30,7 +29,6 @@ class TestCsvLoader:
         first_artifact = artifact.value[0]
         assert first_artifact["Foo"] == "foo1"
         assert first_artifact["Bar"] == "bar1"
-        assert artifact.embedding == [0, 1]
 
     def test_load_delimiter(self, loader_with_pipe_delimiter, create_source):
         source = create_source("test-pipe.csv")
@@ -41,7 +39,6 @@ class TestCsvLoader:
         first_artifact = artifact.value[0]
         assert first_artifact["Foo"] == "bar1"
         assert first_artifact["Bar"] == "foo1"
-        assert artifact.embedding == [0, 1]
 
     def test_load_collection(self, loader, create_source):
         resource_paths = ["test-1.csv", "test-2.csv"]
@@ -58,7 +55,6 @@ class TestCsvLoader:
             first_artifact = artifact.value[0]
             assert first_artifact["Foo"] == "foo1"
             assert first_artifact["Bar"] == "bar1"
-            assert artifact.embedding == [0, 1]
 
     def test_to_text(self, loader, create_source):
         source = create_source("test-1.csv")

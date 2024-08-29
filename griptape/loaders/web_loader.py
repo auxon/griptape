@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from attrs import Factory, define, field
 
-from griptape.artifacts import TextArtifact
 from griptape.drivers import BaseWebScraperDriver, TrafilaturaWebScraperDriver
 from griptape.loaders import BaseLoader
+
+if TYPE_CHECKING:
+    from griptape.artifacts import TextArtifact
 
 
 @define
@@ -14,8 +18,8 @@ class WebLoader(BaseLoader):
         kw_only=True,
     )
 
-    def fetch(self, source: str, *args, **kwargs) -> bytes:
-        return self.web_scraper_driver.scrape_url(source).value.encode()
+    def fetch(self, source: str, *args, **kwargs) -> str:
+        return self.web_scraper_driver.fetch_url(source)
 
-    def parse(self, source: bytes, *args, **kwargs) -> TextArtifact:
-        return TextArtifact(source.decode())
+    def parse(self, source: str, *args, **kwargs) -> TextArtifact:
+        return self.web_scraper_driver.extract_page(source)
