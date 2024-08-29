@@ -150,7 +150,6 @@ drivers-image-generation-huggingface = [
     "pillow",
 ]
 
-loaders-dataframe = ["pandas"]
 loaders-pdf = ["pypdf"]
 loaders-image = ["pillow"]
 loaders-email = ["mail-parser"]

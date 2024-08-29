@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Optional
 
-from attrs import define, field
+from attrs import field
 
-from griptape.mixins import FuturesExecutorMixin
+from griptape.loaders.base_loader import BaseLoader
 from griptape.utils.futures import execute_futures_dict
 from griptape.utils.hash import bytes_to_hash, str_to_hash
 
@@ -13,23 +13,13 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from griptape.artifacts import BaseArtifact
-    from griptape.common import Reference
 
 
-@define
-class BaseLoader(FuturesExecutorMixin, ABC):
-    reference: Optional[Reference] = field(default=None, kw_only=True)
-
-    def load(self, source: Any, *args, **kwargs) -> BaseArtifact:
-        data = self.fetch(source)
-
-        return self.parse(data)
+class FileLoader(BaseLoader):
+    encoding: Optional[str] = field(default=None, kw_only=True)
 
     @abstractmethod
-    def fetch(self, source: Any, *args, **kwargs) -> bytes: ...
-
-    @abstractmethod
-    def parse(self, source: bytes, *args, **kwargs) -> BaseArtifact: ...
+    def load(self, source: Any, *args, **kwargs) -> BaseArtifact: ...
 
     def load_collection(
         self,

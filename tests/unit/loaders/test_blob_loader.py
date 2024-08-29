@@ -18,7 +18,7 @@ class TestTextLoader:
     def test_load(self, loader, create_source):
         source = create_source("test.txt")
 
-        artifact = loader.load(source)[0]
+        artifact = loader.load(source)
 
         assert isinstance(artifact, BlobArtifact)
         if loader.encoding is None:
@@ -37,7 +37,7 @@ class TestTextLoader:
         assert collection.keys() == keys
 
         key = next(iter(keys))
-        artifact = collection[key][0]
+        artifact = collection[key]
 
         assert isinstance(artifact, BlobArtifact)
         if loader.encoding is None:

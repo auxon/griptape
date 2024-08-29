@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import cast
-
 from attrs import define
 
 from griptape.artifacts import AudioArtifact
@@ -14,7 +12,6 @@ class AudioLoader(BaseLoader):
     """Loads audio content into audio artifacts."""
 
     def load(self, source: bytes, *args, **kwargs) -> AudioArtifact:
-        return AudioArtifact(source, format=import_optional_dependency("filetype").guess(source).extension)
+        filetype = import_optional_dependency("filetype")
 
-    def load_collection(self, sources: list[bytes], *args, **kwargs) -> dict[str, AudioArtifact]:
-        return cast(dict[str, AudioArtifact], super().load_collection(sources, *args, **kwargs))
+        return AudioArtifact(source, format=filetype.guess(source).extension)

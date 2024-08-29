@@ -17,11 +17,10 @@ class TestAudioLoader:
     def test_load(self, resource_path, mime_type, loader, create_source):
         source = create_source(resource_path)
 
-        artifact = loader.load(source)[0]
+        artifact = loader.load(source)
 
         assert isinstance(artifact, AudioArtifact)
         assert artifact.mime_type == mime_type
-        assert len(artifact.value) > 0
 
     def test_load_collection(self, create_source, loader):
         resource_paths = ["sentences.wav", "sentences2.wav"]
@@ -32,7 +31,7 @@ class TestAudioLoader:
         assert len(collection) == len(resource_paths)
 
         for key in collection:
-            artifact = collection[key][0]
+            artifact = collection[key]
             assert isinstance(artifact, AudioArtifact)
             assert artifact.mime_type == "audio/wav"
             assert len(artifact.value) > 0

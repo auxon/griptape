@@ -73,7 +73,7 @@ class TestEmailLoader:
         # Then
         mock_search.assert_called_once_with(None, "key", '"search-criteria"')
         assert mock_fetch.call_count == match_count
-        assert isinstance(list_artifact, list)
+        assert isinstance(list_artifact, ListArtifact)
         assert to_value_set(list_artifact) == {f"message-{i}" for i in range(match_count)}
 
     def test_load_returns_error_artifact_when_select_returns_non_ok(self, loader, mock_select):
@@ -140,8 +140,10 @@ def to_message(body: str, content_type: Optional[str]) -> Message:
     return message
 
 
-def to_value_set(artifacts: list | dict[str, list]) -> set[str]:
+def to_value_set(artifacts: ListArtifact | dict[str, ListArtifact]) -> set[str]:
     if isinstance(artifacts, dict):
-        return set({text_artifact.value for list_artifact in artifacts.values() for text_artifact in list_artifact})
+        return set(
+            {text_artifact.value for list_artifact in artifacts.values() for text_artifact in list_artifact.value}
+        )
     else:
-        return {text_artifact.value for text_artifact in artifacts}
+        return {artifact.value for artifact in artifacts.value}
