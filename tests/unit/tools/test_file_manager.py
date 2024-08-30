@@ -139,7 +139,7 @@ class TestFileManager:
 
     def test_save_content_to_file_with_encoding(self, temp_dir):
         file_manager = FileManagerTool(
-            file_manager_driver=LocalFileManagerDriver(default_loader=TextLoader(encoding="utf-8"), workdir=temp_dir)
+            file_manager_driver=LocalFileManagerDriver(encoding="utf-8", workdir=temp_dir)
         )
         result = file_manager.save_content_to_file(
             {"values": {"path": os.path.join("test", "foobar.txt"), "content": "foobar"}}
@@ -150,7 +150,7 @@ class TestFileManager:
 
     def test_save_and_load_content_to_file_with_encoding(self, temp_dir):
         file_manager = FileManagerTool(
-            file_manager_driver=LocalFileManagerDriver(loaders={"txt": TextLoader(encoding="ascii")}, workdir=temp_dir)
+            file_manager_driver=LocalFileManagerDriver(encoding="ascii", workdir=temp_dir)
         )
         result = file_manager.save_content_to_file(
             {"values": {"path": os.path.join("test", "foobar.txt"), "content": "foobar"}}
@@ -159,11 +159,7 @@ class TestFileManager:
         assert Path(os.path.join(temp_dir, "test", "foobar.txt")).read_text() == "foobar"
         assert result.value == "Successfully saved file"
 
-        file_manager = FileManagerTool(
-            file_manager_driver=LocalFileManagerDriver(
-                default_loader=TextLoader(encoding="ascii"), loaders={}, workdir=temp_dir
-            )
-        )
+        file_manager = FileManagerTool(file_manager_driver=LocalFileManagerDriver(encoding="ascii", workdir=temp_dir))
         result = file_manager.load_files_from_disk({"values": {"paths": [os.path.join("test", "foobar.txt")]}})
 
         assert isinstance(result, ListArtifact)

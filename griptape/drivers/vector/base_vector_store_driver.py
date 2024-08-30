@@ -5,10 +5,11 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Optional
 
-from attrs import define, field
+from attrs import Factory, define, field
 
 from griptape import utils
 from griptape.artifacts import BaseArtifact, ListArtifact, TextArtifact
+from griptape.chunkers import BaseChunker, TextChunker
 from griptape.mixins import FuturesExecutorMixin, SerializableMixin
 
 if TYPE_CHECKING:
@@ -18,6 +19,8 @@ if TYPE_CHECKING:
 @define
 class BaseVectorStoreDriver(SerializableMixin, FuturesExecutorMixin, ABC):
     DEFAULT_QUERY_COUNT = 5
+
+    chunker: BaseChunker = field(default=Factory(lambda: TextChunker()), kw_only=True)
 
     @dataclass
     class Entry:
@@ -72,26 +75,12 @@ class BaseVectorStoreDriver(SerializableMixin, FuturesExecutorMixin, ABC):
         *,
         namespace: Optional[str] = None,
         meta: Optional[dict] = None,
-        vector_id: Optional[str] = None,
         **kwargs,
-    ) -> str:
-        meta = {} if meta is None else meta
+    ) -> None:
+        artifact_chunks = self.chunker.chunk(artifact)
 
-        if vector_id is None:
-            value = artifact.to_text() if artifact.reference is None else artifact.to_text() + str(artifact.reference)
-            vector_id = self._get_default_vector_id(value)
-
-        if self.does_entry_exist(vector_id, namespace=namespace):
-            return vector_id
-        else:
-            meta["artifact"] = artifact.to_json()
-
-            vector = artifact.embedding or artifact.generate_embedding(self.embedding_driver)
-
-            if isinstance(vector, list):
-                return self.upsert_vector(vector, vector_id=vector_id, namespace=namespace, meta=meta, **kwargs)
-            else:
-                raise ValueError("Vector must be an instance of 'list'.")
+        for chunk in artifact_chunks:
+            self.upsert_text_artifact_chunk(chunk, namespace=namespace, meta=meta, **kwargs)
 
     def upsert_text(
         self,
@@ -101,19 +90,45 @@ class BaseVectorStoreDriver(SerializableMixin, FuturesExecutorMixin, ABC):
         namespace: Optional[str] = None,
         meta: Optional[dict] = None,
         **kwargs,
+    ) -> None:
+        return self.upsert_text_artifact(
+            TextArtifact(string),
+            vector_id=vector_id,
+            namespace=namespace,
+            meta=meta,
+            **kwargs,
+        )
+
+    def upsert_text_artifact_chunk(
+        self,
+        artifact_chunk: TextArtifact,
+        *,
+        namespace: Optional[str] = None,
+        meta: Optional[dict] = None,
+        vector_id: Optional[str] = None,
+        **kwargs,
     ) -> str:
-        vector_id = self._get_default_vector_id(string) if vector_id is None else vector_id
+        meta = {} if meta is None else meta
+
+        if vector_id is None:
+            value = (
+                artifact_chunk.to_text()
+                if artifact_chunk.reference is None
+                else artifact_chunk.to_text() + str(artifact_chunk.reference)
+            )
+            vector_id = self._get_default_vector_id(value)
 
         if self.does_entry_exist(vector_id, namespace=namespace):
             return vector_id
         else:
-            return self.upsert_vector(
-                self.embedding_driver.embed_string(string),
-                vector_id=vector_id,
-                namespace=namespace,
-                meta=meta or {},
-                **kwargs,
-            )
+            meta["artifact"] = artifact_chunk.to_json()
+
+            vector = artifact_chunk.embedding or artifact_chunk.generate_embedding(self.embedding_driver)
+
+            if isinstance(vector, list):
+                return self.upsert_vector(vector, vector_id=vector_id, namespace=namespace, meta=meta, **kwargs)
+            else:
+                raise ValueError("Vector must be an instance of 'list'.")
 
     def does_entry_exist(self, vector_id: str, *, namespace: Optional[str] = None) -> bool:
         try:
