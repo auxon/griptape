@@ -150,6 +150,10 @@ drivers-image-generation-huggingface = [
     "pillow",
 ]
 
+drivers-file-manager-local = [
+
+]
+
 loaders-pdf = ["pypdf"]
 loaders-image = ["pillow"]
 loaders-email = ["mail-parser"]

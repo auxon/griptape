@@ -21,4 +21,4 @@ class BaseFileLoader(BaseLoader, ABC):
     encoding: str = field(default="utf-8", kw_only=True)
 
     def fetch(self, source: str | PathLike, *args, **kwargs) -> bytes:
-        return self.file_manager_driver.load_file(str(source), *args, **kwargs)
+        return self.file_manager_driver.load_file(str(source), *args, **kwargs).value

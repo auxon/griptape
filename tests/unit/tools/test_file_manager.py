@@ -48,8 +48,7 @@ class TestFileManager:
     def test_load_files_from_disk_with_encoding_failure(self):
         file_manager = FileManagerTool(
             file_manager_driver=LocalFileManagerDriver(
-                default_loader=TextLoader(encoding="utf-8"),
-                loaders={},
+                encoding="utf-8",
                 workdir=os.path.abspath(os.path.dirname(__file__)),
             )
         )

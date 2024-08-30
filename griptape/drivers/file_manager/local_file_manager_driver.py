@@ -42,8 +42,7 @@ class LocalFileManagerDriver(BaseFileManagerDriver):
         Path(full_path).write_bytes(value)
 
     def _full_path(self, path: str) -> str:
-        path = path.lstrip("/")
-        full_path = os.path.join(self.workdir, path) if self.workdir else path
+        full_path = path if self.workdir is None else os.path.join(self.workdir, path.lstrip("/"))
         # Need to keep the trailing slash if it was there,
         # because it means the path is a directory.
         ended_with_slash = path.endswith("/")

@@ -5,7 +5,7 @@ from typing import Optional
 
 from attrs import define, field
 
-from griptape.artifacts import BlobArtifact, ErrorArtifact, InfoArtifact, TextArtifact
+from griptape.artifacts import BlobArtifact, InfoArtifact, TextArtifact
 
 
 @define
@@ -19,18 +19,18 @@ class BaseFileManagerDriver(ABC):
 
     encoding: Optional[str] = field(default=None, kw_only=True)
 
-    def list_files(self, path: str) -> TextArtifact | ErrorArtifact:
+    def list_files(self, path: str) -> TextArtifact:
         entries = self.try_list_files(path)
         return TextArtifact("\n".join(list(entries)))
 
     @abstractmethod
     def try_list_files(self, path: str) -> list[str]: ...
 
-    def load_file(self, path: str) -> BlobArtifact:
+    def load_file(self, path: str) -> BlobArtifact | TextArtifact:
         if self.encoding is None:
             return BlobArtifact(self.try_load_file(path))
         else:
-            return BlobArtifact(self.try_load_file(path), encoding=self.encoding)
+            return TextArtifact(self.try_load_file(path).decode(encoding=self.encoding))
 
     @abstractmethod
     def try_load_file(self, path: str) -> bytes: ...
