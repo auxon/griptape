@@ -44,6 +44,8 @@ from .vector.dummy_vector_store_driver import DummyVectorStoreDriver
 from .vector.qdrant_vector_store_driver import QdrantVectorStoreDriver
 from .vector.astradb_vector_store_driver import AstraDbVectorStoreDriver
 from .vector.griptape_cloud_knowledge_base_vector_store_driver import GriptapeCloudKnowledgeBaseVectorStoreDriver
+from .vector.pydantic_pyarrow_daft_ray_driver import PydanticPyArrowDaftRayDriver
+from .vector.pydantic_pyarrow_lancedb_ray_driver import PydanticPyArrowDaftRayLanceDBDriver
 
 from .sql.base_sql_driver import BaseSqlDriver
 from .sql.amazon_redshift_sql_driver import AmazonRedshiftSqlDriver
@@ -133,6 +135,7 @@ from .observability.open_telemetry_observability_driver import OpenTelemetryObse
 from .observability.griptape_cloud_observability_driver import GriptapeCloudObservabilityDriver
 from .observability.datadog_observability_driver import DatadogObservabilityDriver
 
+
 __all__ = [
     "BasePromptDriver",
     "OpenAiChatPromptDriver",
@@ -176,6 +179,8 @@ __all__ = [
     "QdrantVectorStoreDriver",
     "AstraDbVectorStoreDriver",
     "DummyVectorStoreDriver",
+    "PydanticPyArrowDaftRayDriver",
+    "PydanticPyArrowDaftRayLanceDBDriver",
     "GriptapeCloudKnowledgeBaseVectorStoreDriver",
     "BaseSqlDriver",
     "AmazonRedshiftSqlDriver",
