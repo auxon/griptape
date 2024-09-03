@@ -50,4 +50,4 @@ class BaseEventListenerDriver(FuturesExecutorMixin, ABC):
             else:
                 self.try_publish_event_payload(event_payload)
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
